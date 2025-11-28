@@ -13,6 +13,7 @@ import 'package:flutter_hbb/desktop/pages/view_camera_page.dart';
 import 'package:flutter_hbb/main.dart';
 import 'package:flutter_hbb/models/platform_model.dart';
 import 'package:flutter_hbb/models/state_model.dart';
+import 'package:flutter_hbb/utils/platform_channel.dart';
 import 'package:get/get.dart';
 import 'package:get/get_rx/src/rx_workers/utils/debouncer.dart';
 import 'package:scroll_pos/scroll_pos.dart';
@@ -376,6 +377,17 @@ class _DesktopTabState extends State<DesktopTab>
   @override
   void onWindowFocus() {
     stateGlobal.isFocused.value = true;
+    // On macOS, re-apply fullscreen presentation options when the window regains focus
+    // while in fullscreen mode. This ensures the Dock and menu bar remain hidden after
+    // switching to another app or window and coming back.
+    if (isMacOS && stateGlobal.fullscreen.isTrue) {
+      RdPlatformChannel.instance
+          .setFullscreenPresentationOptions(true)
+          .catchError((e) {
+        debugPrint("Failed to re-apply fullscreen presentation options: $e");
+        return false;
+      });
+    }
   }
 
   @override
