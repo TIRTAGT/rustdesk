@@ -37,6 +37,11 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
+	<key>LSUIElement</key>
+    <string>1</string>
+	<!-- See Docs: https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/LaunchServicesKeys.html -->
+	<key>LSUIPresentationMode</key>
+    <integer>3</integer>
 	<key>NSHumanReadableCopyright</key>
 	<string>$(PRODUCT_COPYRIGHT)</string>
 	<key>NSMainNibFile</key>
@@ -45,7 +50,5 @@
 	<string>Record the sound from microphone for the purpose of the remote desktop.</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
-    <key>LSUIElement</key>
-    <string>1</string>
 </dict>
 </plist>

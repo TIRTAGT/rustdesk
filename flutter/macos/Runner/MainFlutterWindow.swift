@@ -151,6 +151,32 @@ class MainFlutterWindow: NSWindow {
 
                     break
 
+                case "setFullscreenPresentationOptions":
+                    // Set presentation options for fullscreen mode
+                    // This hides the Dock and menu bar when in fullscreen
+                    let arg = call.arguments as? [String: Any]
+                    let isFullscreen = arg?["isFullscreen"] as? Bool ?? false
+
+                    DispatchQueue.main.async {
+                        if isFullscreen {
+                            // Completely hide Dock and menu bar in fullscreen mode
+                            // Using .hideDock and .hideMenuBar instead of .autoHideDock
+                            // and .autoHideMenuBar to prevent accidental interactions
+                            // when the cursor hits screen edges during remote sessions
+                            // See Docs: https://developer.apple.com/documentation/appkit/nsapplication/presentationoptions-swift.struct
+                            NSApplication.shared.presentationOptions = [
+                                .hideDock,
+                                .hideMenuBar,
+                                .fullScreen
+                            ]
+                        } else {
+                            // Restore default presentation options
+                            NSApplication.shared.presentationOptions = []
+                        }
+                    }
+                    result(true)
+                    break
+
                 default:
                     result(FlutterMethodNotImplemented)
                 }

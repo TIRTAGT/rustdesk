@@ -42,4 +42,15 @@ class RdPlatformChannel {
     assert(isMacOS);
     return _hostMethodChannel.invokeMethod("terminate");
   }
+
+  /// Set fullscreen presentation options on macOS.
+  /// When [isFullscreen] is true, the Dock and menu bar will auto-hide.
+  /// When [isFullscreen] is false, the presentation options are restored to default.
+  Future<bool> setFullscreenPresentationOptions(bool isFullscreen) async {
+    if (!isMacOS) return false;
+
+    bool? result = await _hostMethodChannel.invokeMethod(
+        "setFullscreenPresentationOptions", {"isFullscreen": isFullscreen});
+    return result ?? false;
+  }
 }
