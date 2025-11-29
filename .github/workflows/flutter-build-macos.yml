@@ -96,15 +96,23 @@ jobs:
       - name: Patch flutter
         run: |
           cd $(dirname $(dirname $(which flutter)))
-          [[ "3.24.5" == ${{env.FLUTTER_VERSION}} ]] && git apply ${{ github.workspace }}/.github/patches/flutter_3.24.4_dropdown_menu_enableFilter.diff
+          # Only apply patch if not already applied (for cached Flutter)
+          if [[ "3.24.5" == ${{env.FLUTTER_VERSION}} ]]; then
+            git apply --check ${{ github.workspace }}/.github/patches/flutter_3.24.4_dropdown_menu_enableFilter.diff 2>/dev/null && \
+              git apply ${{ github.workspace }}/.github/patches/flutter_3.24.4_dropdown_menu_enableFilter.diff || \
+              echo "Patch already applied or not applicable, skipping"
+          fi
 
       - name: Workaround for flutter issue
         shell: bash
         run: |
           cd "$(dirname "$(which flutter)")"
           # https://github.com/flutter/flutter/issues/133533
-          sed -i -e 's/_setFramesEnabledState(false);/\/\/_setFramesEnabledState(false);/g' ../packages/flutter/lib/src/scheduler/binding.dart
-          grep -n '_setFramesEnabledState(false);' ../packages/flutter/lib/src/scheduler/binding.dart
+          # Use grep to check if already patched before applying
+          if grep -q '_setFramesEnabledState(false);' ../packages/flutter/lib/src/scheduler/binding.dart; then
+            sed -i -e 's/_setFramesEnabledState(false);/\/\/_setFramesEnabledState(false);/g' ../packages/flutter/lib/src/scheduler/binding.dart
+          fi
+          grep -n '_setFramesEnabledState(false);' ../packages/flutter/lib/src/scheduler/binding.dart || echo "Already patched"
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@v1
