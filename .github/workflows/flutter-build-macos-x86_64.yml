@@ -15,6 +15,9 @@ env:
   UPLOAD_ARTIFACT: "${{ inputs.upload-artifact }}"
 
 jobs:
+  generate-bridge:
+    uses: ./.github/workflows/bridge.yml
+
   build-for-macOS:
     name: ${{ matrix.job.target }}
     runs-on: ${{ matrix.job.os }}
@@ -102,10 +105,7 @@ jobs:
             ./flutter/lib/generated_bridge.freezed.dart
             ./flutter/macos/Runner/bridge_generated.h
             ./flutter/ios/Runner/bridge_generated.h
-
-      - name: Compile Bridge from source (Cache Miss)
-        if: steps.restore-bridge.outputs.cache-hit != 'true'
-        uses: ./.github/workflows/bridge.yml
+          fail-on-cache-miss: true
 
       - name: Setup vcpkg with Github Actions binary cache
         uses: lukka/run-vcpkg@v11
