@@ -159,7 +159,8 @@ class MainFlutterWindow: NSWindow, NSWindowDelegate {
         })
     }
 
-    func windowDidEnterFullScreen(_ notification: Notification) {
+    func windowWillEnterFullScreen(_ notification: Notification) {
+        print("windowWillEnterFullScreen called")
         let presentOptions: NSApplication.PresentationOptions = [
             .hideDock,
             .hideMenuBar,
@@ -169,7 +170,16 @@ class MainFlutterWindow: NSWindow, NSWindowDelegate {
         NSApplication.shared.presentationOptions = presentOptions
     }
 
-    func windowDidExitFullScreen(_ notification: Notification) {
+    func windowDidEnterFullScreen(_ notification: Notification) {
+        print("windowDidEnterFullScreen called")
+    }
+
+    func windowWillExitFullScreen(_ notification: Notification) {
+        print("windowWillExitFullScreen called")
         NSApplication.shared.presentationOptions = []
+    }
+
+    func windowDidExitFullScreen(_ notification: Notification) {
+        print("windowDidExitFullScreen called")
     }
 }

@@ -2589,7 +2589,7 @@ class _DraggableShowHideState extends State<_DraggableShowHide> {
               },
               Tooltip(
                 message: translate(
-                    isFullscreen.isTrue ? 'Exit Fullscreen' : 'Fullscreen'),
+                    isFullscreen.isTrue ? 'Exit Immersive Fullscreen' : 'Immersive Fullscreen'),
                 child: Icon(
                   isFullscreen.isTrue
                       ? Icons.fullscreen_exit
