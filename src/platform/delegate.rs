@@ -129,6 +129,7 @@ unsafe fn set_delegate(handler: Option<Box<dyn AppHandler>>) {
 }
 
 extern "C" fn application_did_finish_launching(_this: &mut Object, _: Sel, _notification: id) {
+    println!("TIRTA-RUST: applicationDidFinishLaunching called");
     unsafe {
         LAUNCHED = true;
     }

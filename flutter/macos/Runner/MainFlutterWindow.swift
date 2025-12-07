@@ -21,6 +21,10 @@ import texture_rgba_renderer
 
 class MainFlutterWindow: NSWindow, NSWindowDelegate {
     override func awakeFromNib() {
+        print("TIRTAGT: MainFlutterWindow awakeFromNib called")
+        print("TIRTAGT: Window class: \(type(of: self))")
+        print("TIRTAGT: Window delegate: \(String(describing: self.delegate))")
+
         rustdesk_core_main();
         let flutterViewController = FlutterViewController.init()
         let windowFrame = self.frame
@@ -51,7 +55,16 @@ class MainFlutterWindow: NSWindow, NSWindowDelegate {
             TextureRgbaRendererPlugin.register(with: controller.registrar(forPlugin: "TextureRgbaRendererPlugin"))
         }
 
+        print("TIRTAGT: MainFlutterWindow set delegate")
         self.delegate = self
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            print("TIRTAGT: Delegate after 1s: \(String(describing: self.delegate))")
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
+            print("TIRTAGT: Delegate after 1s: \(String(describing: self.delegate))")
+        }
 
         super.awakeFromNib()
     }
@@ -160,7 +173,7 @@ class MainFlutterWindow: NSWindow, NSWindowDelegate {
     }
 
     func windowWillEnterFullScreen(_ notification: Notification) {
-        print("windowWillEnterFullScreen called")
+        print("TIRTAGT: windowWillEnterFullScreen called")
         let presentOptions: NSApplication.PresentationOptions = [
             .hideDock,
             .hideMenuBar,
@@ -171,15 +184,15 @@ class MainFlutterWindow: NSWindow, NSWindowDelegate {
     }
 
     func windowDidEnterFullScreen(_ notification: Notification) {
-        print("windowDidEnterFullScreen called")
+        print("TIRTAGT: windowDidEnterFullScreen called")
     }
 
     func windowWillExitFullScreen(_ notification: Notification) {
-        print("windowWillExitFullScreen called")
+        print("TIRTAGT: windowWillExitFullScreen called")
         NSApplication.shared.presentationOptions = []
     }
 
     func windowDidExitFullScreen(_ notification: Notification) {
-        print("windowDidExitFullScreen called")
+        print("TIRTAGT: windowDidExitFullScreen called")
     }
 }
