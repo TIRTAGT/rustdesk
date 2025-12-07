@@ -15,13 +15,9 @@ env:
   UPLOAD_ARTIFACT: "${{ inputs.upload-artifact }}"
 
 jobs:
-  generate-bridge:
-    uses: ./.github/workflows/bridge.yml
-
   build-for-macOS:
     name: ${{ matrix.job.target }}
     runs-on: ${{ matrix.job.os }}
-    needs: [generate-bridge]
     strategy:
       fail-fast: false
       matrix:
@@ -94,11 +90,22 @@ jobs:
         with:
           prefix-key: ${{ matrix.job.os }}
 
-      - name: Restore bridge files
-        uses: actions/download-artifact@master
+      - name: Restore the Bridge files
+        id: restore-bridge
+        uses: actions/cache/restore@v4
         with:
-          name: bridge-artifact
-          path: ./
+          key: rustdesk-bridge-${{ hashFiles('src/**', 'Cargo.toml', 'Cargo.lock', 'flutter/pubspec.yaml') }}
+          path: |
+            ./src/bridge_generated.rs
+            ./src/bridge_generated.io.rs
+            ./flutter/lib/generated_bridge.dart
+            ./flutter/lib/generated_bridge.freezed.dart
+            ./flutter/macos/Runner/bridge_generated.h
+            ./flutter/ios/Runner/bridge_generated.h
+
+      - name: Compile Bridge from source (Cache Miss)
+        if: steps.restore-bridge.outputs.cache-hit != 'true'
+        uses: ./.github/workflows/bridge.yml
 
       - name: Setup vcpkg with Github Actions binary cache
         uses: lukka/run-vcpkg@v11
