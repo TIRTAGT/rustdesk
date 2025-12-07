@@ -108,13 +108,17 @@ jobs:
             ./flutter/ios/Runner/bridge_generated.h
           fail-on-cache-miss: true
 
-      - name: Setup vcpkg with Github Actions binary cache
-        uses: lukka/run-vcpkg@v11
+      - name: Restore vcpkg cache
+        id: restore-vcpkg
+        uses: actions/cache/restore@v4
         with:
-          vcpkgGitCommitId: ${{ env.VCPKG_COMMIT_ID }}
-          doNotCache: false
+          path: |
+            ${{ env.VCPKG_ROOT }}/installed
+            ${{ env.VCPKG_ROOT }}/packages
+          key: vcpkg-${{ env.VCPKG_COMMIT_ID }}-${{ matrix.job.vcpkg-triplet }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
 
       - name: Install vcpkg dependencies
+        if: steps.restore-vcpkg.outputs.cache-hit != 'true'
         run: |
           if ! $VCPKG_ROOT/vcpkg \
             install \
@@ -129,6 +133,15 @@ jobs:
             exit 1
           fi
           head -n 100 "${VCPKG_ROOT}/buildtrees/ffmpeg/build-${{ matrix.job.vcpkg-triplet }}-rel-out.log" || true
+
+      - name: Save vcpkg cache
+        if: steps.restore-vcpkg.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ${{ env.VCPKG_ROOT }}/installed
+            ${{ env.VCPKG_ROOT }}/packages
+          key: vcpkg-${{ env.VCPKG_COMMIT_ID }}-${{ matrix.job.vcpkg-triplet }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
 
       - name: Show version information (Rust, cargo, Clang)
         shell: bash
