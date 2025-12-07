@@ -97,7 +97,7 @@ jobs:
         if: steps.check-bridge-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         with:
-          key: rustdesk-bridge-${{ hashFiles('src/**', 'Cargo.toml', 'Cargo.lock', 'flutter/pubspec.yaml') }}
+          key: ${{ steps.check-bridge-cache.outputs.cache-primary-key }}
           path: |
             ./src/bridge_generated.rs
             ./src/bridge_generated.io.rs
