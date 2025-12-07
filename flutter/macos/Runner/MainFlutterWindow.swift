@@ -19,7 +19,7 @@ import window_manager
 import window_size
 import texture_rgba_renderer
 
-class MainFlutterWindow: NSWindow {
+class MainFlutterWindow: NSWindow, NSWindowDelegate {
     override func awakeFromNib() {
         rustdesk_core_main();
         let flutterViewController = FlutterViewController.init()
@@ -50,6 +50,8 @@ class MainFlutterWindow: NSWindow {
             WindowSizePlugin.register(with: controller.registrar(forPlugin: "WindowSizePlugin"))
             TextureRgbaRendererPlugin.register(with: controller.registrar(forPlugin: "TextureRgbaRendererPlugin"))
         }
+
+        self.delegate = self
 
         super.awakeFromNib()
     }
@@ -155,5 +157,19 @@ class MainFlutterWindow: NSWindow {
                     result(FlutterMethodNotImplemented)
                 }
         })
+    }
+
+    func windowDidEnterFullScreen(_ notification: Notification) {
+        let presentOptions: NSApplication.PresentationOptions = [
+            .hideDock,
+            .hideMenuBar,
+            .disableProcessSwitching,
+            .fullScreen
+        ]
+        NSApplication.shared.presentationOptions = presentOptions
+    }
+
+    func windowDidExitFullScreen(_ notification: Notification) {
+        NSApplication.shared.presentationOptions = []
     }
 }
